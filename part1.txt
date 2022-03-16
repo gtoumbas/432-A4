@@ -1,0 +1,65 @@
+COS 432 Assignment 4: Network Security
+Part 1: Exploring Network Traces
+
+================================================================================
+
+1. There are no more than five devices actively communicating on the local area network. What are their MAC and IP addresses? Who manufactured these devices?
+
+
+================================================================================
+
+2. What type of network does this appear to be (e.g., a large corporation, an ISP back- bone, etc.)? Point to evidence from the trace that supports this.
+
+
+================================================================================
+
+3. One of the clients connects to an FTP server during the trace.
+
+a. What is the DNS hostname of the server it connects to?
+
+
+b. Is the connection using Active or Passive FTP?
+
+
+c. Based on the packet capture, what is one major vulnerability of the FTP protocol?
+
+
+d. Name at least two network protocols that can be used in place of FTP to provide secure file transfer. Use the associated acronyms.
+
+
+================================================================================
+
+4. The trace shows that at least one of the clients makes HTTPS connections to sites other than Facebook. Pick one of these connections and answer the following:
+
+a. What is the domain name of the site the client is connecting to?
+
+
+b. Is there any way the HTTPS server can protect against the leak of information in (a)? If yes, explain why. If no, explain why not.
+
+
+c. During the TLS handshake, the client provides a list of supported cipher suites. List the first three cipher suites and name the cryptographic algorithms used in each.
+
+
+d. Are any of these cipher suites worrisome from a security or privacy perspective? Why?
+
+
+e. What cipher suite does the server choose for the connection?
+
+
+================================================================================
+
+5. One of the clients makes a number of requests to Facebook.
+
+a. Even though logins are processed over HTTPS, what is insecure about the way the browser is authenticated to Facebook?
+
+
+b. How would this let an attacker impersonate the user on Facebook?
+
+
+c. How can users protect themselves against this type of attack?
+
+
+d. What did the user do while on the Facebook site?
+
+
+================================================================================
