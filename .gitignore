@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# PCAP files
+*.pcap
+
 # Distribution / packaging
 .Python
 build/
