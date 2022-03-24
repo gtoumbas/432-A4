@@ -5,10 +5,16 @@ Part 3: Penetration Testing
 
 1. How many possible Wi-Fi passwords are there that fulfills the password format?
 
-
+    2 * (62)^3 = 476,656
+ 
 ================================================================================
 
 2. What is that actual Wi-Fi password used? How did you obtain that password?
+
+    cos432-h4Z. We built a dictionary of all possible passwords fulfilling the password 
+    format and then used hashcat to test each of these passwords using the 4-way handshake 
+    information on Wireshark. 
+
 
 
 ================================================================================
@@ -17,23 +23,70 @@ Part 3: Penetration Testing
 
 a. What are their IP addresses, respectively? (If a machine has multiple interfaces, report all IP addresses.) How did you get these addresses?
 
+    10.0.7.36, 169.254.169.254 (firewall) 
+    10.0.72.245 (mainframe)
+    18.223.158.90 (employee)
+
+    We looked at packets on Wireshark. Because all data from external IP’s were passed through 10.0.7.36 and then to 10.0.72.245, 
+    we inferred that these two IP’s belonged to the firewall and mainframe respectively. The employee IP’s was one of the IPs which was 
+    communicating through the firewall to the mainframe. 
 
 b. What services are currently running on these machines respectively? On which port is each service running? How did you obtain this information?
+
+    We ran nmap port scans on ports 1-1000 for all of these machines. 
+
+    10.0.7.36 - Firewall
+    PORT    STATE SERVICE
+    22/tcp  open  ssh
+    80/tcp  open  http
+    111/tcp open  rpcbind
+    443/tcp open  https
+
+    10.0.72.245 - Mainframe
+    PORT    STATE SERVICE VERSION
+    22/tcp  open  ssh     OpenSSH 7.4 (protocol 2.0)
+    111/tcp open  rpcbind 2-4 (RPC #100000)
+    234/tcp open  ftp     vsftpd 2.0.8 or later
+
+    18.223.158.90 - Employee
+    22/tcp  open     ssh
+    25/tcp  filtered smtp
+    111/tcp open     rpcbind
+
 
 
 ================================================================================
 
 4. List all of the clients of the company. Briefly explain how you gained access to this client list.
 
+    Christopher Eisgruber
+    Donald Knuth
+    Paul Nakasone
 
+    After performing our port scan using nmap in part 3, we noticed an ftp port on 10.0.72.245. 
+    We used 10 minutes worth of wireshark data collected using tcpdump and filtered for ftp port and 
+    noted a user bob attempting to login to the companies ftp server.  Bob’s password was unencrypted in 
+    plaintext and we used these credentials to login to the ftp server on 10.0.72.245 from behind the firewall. 
+    Then we navigated around and found client_list.txt in the bob/ folder within the ftp server. We transferred 
+    the file to our local machine using “get” and read the file there.
+
+	
 ================================================================================
 
 5. There are unencrypted and encrypted conversations between Alice and Bob.
 
 a. What does the unencrypted conversation say? Please paste it here and briefly describe how you found and obtained the content.
 
+    Alice:  I heard you got a job at that terrible company...
+    Bob:    Yeah. I may be sacrificing my morals and dignity, but they pay well.
+    Alice:  No one will ever take you seriously again.
+    Bob:    What's that? I can't hear you.
+    Bob:    I'm listening to Spotify *Premium* through my *Airpods*.
+    Alice:  You're disgusting. Anyway, make sure to encrypt all of our communications.
+    Bob:    Of course! I found this guide that said to use a one time pad.
+    Alice:  What do you think they mean by one time?
+    Bob:    No idea! Hopefully nothing important.
 
-b. (extra credit) Can you decrypt the encrypted messages? If so, what does the plaintext say? Describe how you determined the plaintext contents of the encrypted messages.
-
-
-================================================================================
+    We used tcpdump to capture packets from both the firewall and the mainframe. We then looked at IP addresses which were communicating 
+    back and forth with the mainframe through the firewall. One of these IP’s looked like it could be Bob’s device. We then used the bob.pem file 
+    found in the .ssh folder to ssh into Bob’s device, where we found conversation.txt. 
