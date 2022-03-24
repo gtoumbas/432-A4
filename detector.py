@@ -21,7 +21,6 @@ def detect_anomaly(packet_capture):
 
         ip = eth.data
 
-        # TODO probably a better way to do this
         # Checking for ethernet and IP
         if type(eth).__name__ != "Ethernet" or type(ip).__name__ != "IP":
             continue
