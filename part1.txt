@@ -1,65 +1,91 @@
 COS 432 Assignment 4: Network Security
 Part 1: Exploring Network Traces
 
-================================================================================
+========================================================================
 
 1. There are no more than five devices actively communicating on the local area network. What are their MAC and IP addresses? Who manufactured these devices?
 
+    10.0.2.1 -  Netgear - MAC: a4:2b:8c:f6:eb:81
+    10.0.2.231 - ASUS - MAC: 00:1f:c6:8f:29:17
+    10.0.2.191 - ASUS - MAC: 00:1e:8c:ea:1a:b4
 
-================================================================================
+========================================================================
 
 2. What type of network does this appear to be (e.g., a large corporation, an ISP back- bone, etc.)? Point to evidence from the trace that supports this.
 
+    When filtering packets for HTTP in Wireshark, it becomes apparent that much of the communication involves images (JPEG, PNG), Javascript applications, JSON data, and more. There’s traffic to sites like Facebook, Evernote, and the NYTimes. Additionally, there are very few devices (only two laptops). Thus, we believe this network represents a small residential network.
 
-================================================================================
+========================================================================
 
 3. One of the clients connects to an FTP server during the trace.
 
 a. What is the DNS hostname of the server it connects to?
 
+    https://dl.xs4all.nl/
 
 b. Is the connection using Active or Passive FTP?
 
+    Active, since the user issues a PORT command which is only used for active FTP. 
 
 c. Based on the packet capture, what is one major vulnerability of the FTP protocol?
 
+    The username and password information are unencrypted and visible to everyone. 
 
 d. Name at least two network protocols that can be used in place of FTP to provide secure file transfer. Use the associated acronyms.
 
+    SFTP, FTPS
 
-================================================================================
+========================================================================
 
 4. The trace shows that at least one of the clients makes HTTPS connections to sites other than Facebook. Pick one of these connections and answer the following:
 
 a. What is the domain name of the site the client is connecting to?
 
+    www.evernote.com
 
 b. Is there any way the HTTPS server can protect against the leak of information in (a)? If yes, explain why. If no, explain why not.
 
+    No. At some point, the IP address (found via DNS lookup of the domain address) has to be known in order for the request to reach the correct server. 
 
 c. During the TLS handshake, the client provides a list of supported cipher suites. List the first three cipher suites and name the cryptographic algorithms used in each.
 
+    TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA (0xc00a). The algorithms used are Elliptic Curve Diffie-Hellman, Elliptic Curve Digital Signature Algorithm, Advanced Encryption Standard, Cipher Block Chaining, and the SHA-256 hashing algorithm
+    TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (0xc014). The algorithms used are Elliptic Curve Diffie-Hellman, RSA, Advanced Encryption Standard, Cipher Block Chaining, and the SHA-256 hashing algorithm
+    TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA (0x0088). The algorithms used are Diffie-Hellman, RSA, Camellia, Cipher Block Chaining, and the SHA-256 hashing algorithm.
 
 d. Are any of these cipher suites worrisome from a security or privacy perspective? Why?
 
+    Yes, any of the ones that use the RC4 stream cipher (TLS_RSA_WITH_RC4_128_MD5, TLS_RSA_WITH_RC4_128_MD4). 
+    The output of the RC4 stream cipher is biased towards certain bits. For example, if the third byte of the original state is 0, 
+    and the second byte is not 2, then the encrypted second byte will always be 0. These types of biases mean that the RC4 ciphertext 
+    leaks information about the plaintext.
 
 e. What cipher suite does the server choose for the connection?
+    TLS_RSA_WITH_AES_256_CBC_SHA
 
 
-================================================================================
+========================================================================
 
 5. One of the clients makes a number of requests to Facebook.
 
 a. Even though logins are processed over HTTPS, what is insecure about the way the browser is authenticated to Facebook?
 
+    Facebook uses cookies to authenticate users. These cookies however, are not encrypted.
 
 b. How would this let an attacker impersonate the user on Facebook?
 
+    This is insecure because a MITM would be able to copy a user's cookies and, 
+    in doing so, would be able to impersonate the user.  
 
 c. How can users protect themselves against this type of attack?
 
+    To avoid a MITM attack taking place on the local network, a user could tunnel their traffic
+    through a trusted 3rd party (such as a VPN service), preventing the MITM from viewing cookie data. However, if this 
+    3rd party was compromised (perhaps by a MITM attack), a user's cookies would still be vulnerable.
+    Alternatively, Facebook could encrypt user cookies.   
 
 d. What did the user do while on the Facebook site?
-
+    The user first went to the Facebook homepage. Next, 
+    the user searches for another user by the name of Zakir Durumeri and views Zakir's profile picture. 
 
 ================================================================================
